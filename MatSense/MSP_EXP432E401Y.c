@@ -471,7 +471,6 @@ GPIO_PinConfig gpioPinConfigs[] = {
     /* MUX_OUT_CTRL3 */
     GPIOMSP432E4_PN3 | GPIO_CFG_OUT_STD | GPIO_CFG_OUT_STR_HIGH |
     GPIO_CFG_OUT_LOW,
-
 };
 
 /*

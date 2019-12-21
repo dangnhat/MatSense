@@ -53,6 +53,8 @@
 
 extern Display_Handle display;
 
+extern void * adcReadingThread(void *arg0);
+
 /*
  *  ======== TCPSocket ========
  *  Thread to create a client and connect to Python server script,
@@ -91,48 +93,76 @@ void * TCPSocket(void *args)
         {
             Display_printf(display, 0, 0, "Interface(s) not added yet\n");
             sleep(5);
+            continue;
         }
         else if((WiFiState == 0) && (EthernetState == 0))
         {
             Display_printf(display, 0, 0, "Interface(s) are not connected\n");
             sleep(5);
+            continue;
         }
-        else
+
+        break;
+    }
+
+    /* Create a ADC thread, Prio = 2 */
+    pthread_t adc_handler_thread = (pthread_t) NULL;
+    pthread_attr_t adc_pAttrs_handler;
+    struct sched_param adc_handlerParam;
+
+
+    pthread_attr_init(&adc_pAttrs_handler);
+    adc_handlerParam.sched_priority = 1;
+    retc = pthread_attr_setschedparam(&adc_pAttrs_handler, &adc_handlerParam);
+    retc |= pthread_attr_setstacksize(&adc_pAttrs_handler, ADCTHREADSTACKSIZE);
+    retc |= pthread_attr_setdetachstate(&adc_pAttrs_handler,
+                                        PTHREAD_CREATE_DETACHED);
+    retc |=
+        pthread_create(&adc_handler_thread, &adc_pAttrs_handler,
+                       adcReadingThread,
+                       NULL);
+
+    if(retc != 0)
+    {
+        /* Failed to create adcReadingThread thread */
+        Display_printf(display, 0, 0, "Failed to create adcReadingThread thread\n");
+        while(1);
+    }
+
+    Display_printf(display, 0, 0, "Created adcReadingThread thread\n");
+
+    while (1) {
+        server = SlNetSock_create(SLNETSOCK_AF_INET, SLNETSOCK_SOCK_STREAM,
+        SLNETSOCK_PROTO_TCP,
+                                  0, SLNETSOCK_CREATE_IF_STATUS_CONNECTED);
+
+        if (server < 0)
         {
-            server =
-                SlNetSock_create(SLNETSOCK_AF_INET, SLNETSOCK_SOCK_STREAM,
-                                 SLNETSOCK_PROTO_TCP,
-                                 0, SLNETSOCK_CREATE_IF_STATUS_CONNECTED);
-
-            if(server < 0)
-            {
-                Display_printf(display, 0, 0, "Socket failed\n");
-                goto shutdown;
-            }
-
-            retc =
-                SlNetSock_connect(server, (const SlNetSock_Addr_t *)&serverAddr,
-                                  sizeof(serverAddr));
-
-            if((retc = SlNetSock_send(server, txBuf, sizeof(txBuf), 0)) < 0)
-            {
-                Display_printf(display, 0, 0, "Send failed\n");
-                goto shutdown;
-            }
-
-            if((retc = SlNetSock_recv(server, rxBuf, sizeof(rxBuf), 0)) < 0)
-            {
-                Display_printf(display, 0, 0, "Receive failed\n");
-                goto shutdown;
-            }
-
-            rxBuf[retc] = '\0';
-            Display_printf(display, 0, 0, "%s", rxBuf);
-
-            SlNetSock_close(server);
-
-            sleep(5);
+            Display_printf(display, 0, 0, "Socket failed\n");
+            goto shutdown;
         }
+
+        retc = SlNetSock_connect(server, (const SlNetSock_Addr_t *) &serverAddr,
+                                 sizeof(serverAddr));
+
+        if ((retc = SlNetSock_send(server, txBuf, sizeof(txBuf), 0)) < 0)
+        {
+            Display_printf(display, 0, 0, "Send failed\n");
+            goto shutdown;
+        }
+
+        if ((retc = SlNetSock_recv(server, rxBuf, sizeof(rxBuf), 0)) < 0)
+        {
+            Display_printf(display, 0, 0, "Receive failed\n");
+            goto shutdown;
+        }
+
+        rxBuf[retc] = '\0';
+        Display_printf(display, 0, 0, "%s", rxBuf);
+
+        SlNetSock_close(server);
+
+        sleep(5);
     }
 shutdown:
     if(server != -1)

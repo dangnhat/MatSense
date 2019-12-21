@@ -10,7 +10,7 @@ import socket
 from collections import deque
 
 # Set this IP address to your computer's IP address on the network
-TCP_IP = '192.168.1.2'
+TCP_IP = '192.168.137.1'
 
 # This port number is arbitrary, but make sure it matches the
 # port number in the wifi_ethernet_sockets.h file, also called TCPPORT

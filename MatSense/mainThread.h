@@ -32,6 +32,8 @@
 #ifndef MAINTHREAD_H_
 #define MAINTHREAD_H_
 
+#include <ti/display/Display.h>
+
 /* Stack size in bytes */
 #define HANDLERSTACKSIZE         2048
 
@@ -44,6 +46,9 @@
 #define TCPPORT                  5005
 
 /* Your computer's IP address on the network */
-#define IPADDRESS                "192.168.1.2"
+#define IPADDRESS                "192.168.137.1"
+
+/* Display handler */
+extern Display_Handle display;
 
 #endif /* MAINTHREAD_H_ */

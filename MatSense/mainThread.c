@@ -66,6 +66,9 @@ extern void * TCPSocket(void *args);
  */
 void * mainThread(void *pvParameters)
 {
+    int retc;
+    int status;
+
     GPIO_init();
     SPI_init();
 
@@ -82,36 +85,6 @@ void * mainThread(void *pvParameters)
     }
 
     Display_printf(display, 0, 0, "Welcome to MatSense v0.1\n");
-
-    /* Create a ADC thread, Prio = 2 */
-    pthread_t adc_handler_thread = (pthread_t) NULL;
-    pthread_attr_t adc_pAttrs_handler;
-    struct sched_param adc_handlerParam;
-
-    int retc;
-    int status;
-
-    pthread_attr_init(&adc_pAttrs_handler);
-    adc_handlerParam.sched_priority = 2;
-    retc = pthread_attr_setschedparam(&adc_pAttrs_handler, &adc_handlerParam);
-    retc |= pthread_attr_setstacksize(&adc_pAttrs_handler, ADCTHREADSTACKSIZE);
-    retc |= pthread_attr_setdetachstate(&adc_pAttrs_handler,
-                                        PTHREAD_CREATE_DETACHED);
-    retc |=
-        pthread_create(&adc_handler_thread, &adc_pAttrs_handler,
-                       adcReadingThread,
-                       NULL);
-
-    if(retc != 0)
-    {
-        /* Failed to create adcReadingThread thread */
-        while(1);
-    }
-
-    /* TODO: sleep for now */
-    while (1) {
-        sleep(1);
-    }
 
     status = SlNetSock_init(0);
     if(status != 0)
@@ -153,6 +126,35 @@ void * mainThread(void *pvParameters)
 
     ti_simplelink_host_config_Global_startupFxn();
     ti_ndk_config_Global_startupFxn();
+
+
+    /* Create a ADC thread, Prio = 2 */
+//    pthread_t adc_handler_thread = (pthread_t) NULL;
+//    pthread_attr_t adc_pAttrs_handler;
+//    struct sched_param adc_handlerParam;
+//
+//
+//    pthread_attr_init(&adc_pAttrs_handler);
+//    adc_handlerParam.sched_priority = 1;
+//    retc = pthread_attr_setschedparam(&adc_pAttrs_handler, &adc_handlerParam);
+//    retc |= pthread_attr_setstacksize(&adc_pAttrs_handler, ADCTHREADSTACKSIZE);
+//    retc |= pthread_attr_setdetachstate(&adc_pAttrs_handler,
+//                                        PTHREAD_CREATE_DETACHED);
+//    retc |=
+//        pthread_create(&adc_handler_thread, &adc_pAttrs_handler,
+//                       adcReadingThread,
+//                       NULL);
+//
+//    if(retc != 0)
+//    {
+//        /* Failed to create adcReadingThread thread */
+//        while(1);
+//    }
+
+//    /* TODO: sleep for now */
+//    while (1) {
+//        sleep(1);
+//    }
 
     return (0);
 }

@@ -58,8 +58,6 @@
 /* Application includes */
 #include "Board.h"
 
-extern Display_Handle display;
-
 /* Expiration value for the timer that is being used to toggle the Led.
  */
 #define TIMER_EXPIRATION_VALUE   100 * 1000000

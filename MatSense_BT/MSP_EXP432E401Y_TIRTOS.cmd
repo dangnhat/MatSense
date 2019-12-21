@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2017, Texas Instruments Incorporated
+ * Copyright (c) 2017, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,50 +29,41 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-#include <mainThread.h>
-#include <ti/ndk/inc/netmain.h>
-#include <ti/ndk/slnetif/slnetifndk.h>
-#include <ti/net/slnetif.h>
-
-#include <ti/display/Display.h>
-
-#include <pthread.h>
-
 /*
- *  ======== netIPAddrHook ========
- *  User defined network IP address hook. Starts the EthernetTCPHandler thread.
- *
+ *  ======== MSP_EXP432E401Y.cmd ========
+ *  Define the memory block start/length for the MSP_EXP432E401Y M4
  */
-void netIPAddrHook(uint32_t IPAddr,
-                   unsigned int IfIdx,
-                   unsigned int fAdd)
+--stack_size=1024   /* C stack is also used for ISR stack */
+
+HEAPSIZE = 0x20000;  /* Size of heap buffer used by HeapMem */
+
+MEMORY
 {
-    static bool addInterface = true;
-    int32_t status = 0;
-
-    if(addInterface)
-    {
-        status = SlNetIf_add(SLNETIF_ID_2, "eth0",
-                             (const SlNetIf_Config_t *)&SlNetIfConfigNDK, 4);
-    }
-
-    if(status != 0)
-    {
-        Display_printf(display, 0, 0, "SlNetIf_add fail (%d)\n",
-                       status);
-    }
-
-    if(fAdd && addInterface)
-    {
-        addInterface = false;
-    }
+    FLASH (RX) : origin = 0x00000000, length = 0x00100000
+    SRAM (RWX) : origin = 0x20000000, length = 0x00040000
 }
 
-/*
- *  ======== netOpenHook ========
- *  NDK network open hook
- */
-void netOpenHook()
+/* Section allocation in memory */
+
+SECTIONS
 {
+    .text   :   > FLASH
+    .const  :   > FLASH
+    .cinit  :   > FLASH
+    .pinit  :   > FLASH
+    .init_array : > FLASH
+
+    .TI.ramfunc : {} load=FLASH, run=SRAM, table(BINIT)
+    .data   :   > SRAM
+    .bss    :   > SRAM
+    .sysmem :   > SRAM
+
+    /* Heap buffer used by HeapMem */
+    .priheap   : {
+        __primary_heap_start__ = .;
+        . += HEAPSIZE;
+        __primary_heap_end__ = .;
+    } > SRAM align 8
+
+    .stack  :   > SRAM (HIGH)
 }

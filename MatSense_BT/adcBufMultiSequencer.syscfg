@@ -1,0 +1,126 @@
+// These arguments were used when this file was generated. They will be automatically applied on subsequent loads 
+// via the GUI or CLI invocations. Run CLI with '--help' for additional information on how to override these arguments.
+// @cliArgs --board "/ti/boards/MSP_EXP432E401Y" --product "simplelink_msp432e4_sdk@3.30.00.22"
+// @versions {"data":"2019083011","timestamp":"2019083011","tool":"1.2.952","templates":"2019083011"}
+
+var RTOS = scripting.addModule("/ti/drivers/RTOS");
+var ADCBuf = scripting.addModule("/ti/drivers/ADCBuf");
+var ADCBuf1 = ADCBuf.addInstance();
+var DMA = scripting.addModule("/ti/drivers/DMA");
+var Board = scripting.addModule("/ti/drivers/Board");
+var DriverLib = scripting.addModule("/ti/devices/DriverLib");
+var Power = scripting.addModule("/ti/drivers/Power");
+var Display = scripting.addModule("/ti/display/Display");
+var Display1 = Display.addInstance();
+var UART = scripting.addModule("/ti/drivers/UART");
+var UART2 = UART.addInstance();
+var GPIO = scripting.addModule("/ti/drivers/GPIO");
+var GPIO1 = GPIO.addInstance();
+// Name
+RTOS.timer0.resource.$name = "MyTimer1";
+// Name - The C/C++ identifier used in applications as the index parameter passed to ADC runtime APIs
+ADCBuf1.$name = "CONFIG_ADCBUF0";
+// Sequencers - Selects the ADC sequencers for which channels will be configured.
+ADCBuf1.sequencers = [0,1];
+// Name
+ADCBuf1.timer.$name = "MyTimer1";
+// Name
+ADCBuf1.adc.$name = "MyADC1";
+// Name
+ADCBuf1.sequencer0.$name = "ti_drivers_adcbuf_ADCBufSeqMSP432E40";
+// Channels - Specifies the number of channels to configure for this sequencer.
+ADCBuf1.sequencer0.channels = 8;
+// Name - C identifier used to identify this ADCBuf channel.
+ADCBuf1.sequencer0.channel0.$name = "CHANNEL_0";
+// Assign pin
+ADCBuf1.sequencer0.channel0.adcPin.$assign = "boosterpack.26"; // PE3
+// Name - C identifier used to identify this ADCBuf channel.
+ADCBuf1.sequencer0.channel1.$name = "CHANNEL_1";
+// Assign pin
+ADCBuf1.sequencer0.channel1.adcPin.$assign = "boosterpack.25"; // PE2
+// Name - C identifier used to identify this ADCBuf channel.
+ADCBuf1.sequencer0.channel2.$name = "CHANNEL_2";
+// Assign pin
+ADCBuf1.sequencer0.channel2.adcPin.$assign = "boosterpack.24"; // PE1
+// Name - C identifier used to identify this ADCBuf channel.
+ADCBuf1.sequencer0.channel3.$name = "CHANNEL_3";
+// Assign pin
+ADCBuf1.sequencer0.channel3.adcPin.$assign = "boosterpack.23"; // PE0
+// Name - C identifier used to identify this ADCBuf channel.
+ADCBuf1.sequencer0.channel4.$name = "CHANNEL_4";
+// Assign pin
+ADCBuf1.sequencer0.channel4.adcPin.$assign = "boosterpack.27"; // PD7
+// Name - C identifier used to identify this ADCBuf channel.
+ADCBuf1.sequencer0.channel5.$name = "CHANNEL_5";
+// Assign pin
+ADCBuf1.sequencer0.channel5.adcPin.$assign = "boosterpack.6"; // PE5
+// Name - C identifier used to identify this ADCBuf channel.
+ADCBuf1.sequencer0.channel6.$name = "CHANNEL_6";
+// Assign pin
+ADCBuf1.sequencer0.channel6.adcPin.$assign = "boosterpack.2"; // PE4
+// Name - C identifier used to identify this ADCBuf channel.
+ADCBuf1.sequencer0.channel7.$name = "CHANNEL_7";
+// Assign pin
+ADCBuf1.sequencer0.channel7.adcPin.$assign = "boosterpack2.23"; // PB4
+// Name
+ADCBuf1.sequencer1.$name = "ti_drivers_adcbuf_ADCBufSeqMSP432E41";
+// Channels - Specifies the number of channels to configure for this sequencer.
+ADCBuf1.sequencer1.channels = 4;
+// Name - C identifier used to identify this ADCBuf channel.
+ADCBuf1.sequencer1.channel0.$name = "CHANNEL_8";
+// Assign pin
+ADCBuf1.sequencer1.channel0.adcPin.$assign = "boosterpack2.24"; // PB5
+// Name - C identifier used to identify this ADCBuf channel.
+ADCBuf1.sequencer1.channel1.$name = "CHANNEL_9";
+// Assign pin
+ADCBuf1.sequencer1.channel1.adcPin.$assign = "boosterpack2.25"; // PK0
+// Name - C identifier used to identify this ADCBuf channel.
+ADCBuf1.sequencer1.channel2.$name = "CHANNEL_10";
+// Assign pin
+ADCBuf1.sequencer1.channel2.adcPin.$assign = "boosterpack2.26"; // PK1
+// Name - C identifier used to identify this ADCBuf channel.
+ADCBuf1.sequencer1.channel3.$name = "CHANNEL_11";
+// Assign pin
+ADCBuf1.sequencer1.channel3.adcPin.$assign = "boosterpack2.27"; // PK2
+// Name - The C/C++ identifier used in applications as the index parameter passed to Display runtime APIs
+Display1.$name = "CONFIG_Display_0";
+// Use Hardware - Select the hardware to use, or 'None' to use available header pins
+Display1.$hardware = system.deviceData.board.components.XDS110UART;
+// Name - The C/C++ identifier used in applications as the index parameter passed to UART runtime APIs
+Display1.uart.$name = "CONFIG_UART_0";
+// Name
+Display1.uart.uart.$name = "MyUART1";
+// Name - The C/C++ identifier used in applications as the index parameter passed to UART runtime APIs
+UART2.$name = "BTSPP_UART";
+// Name
+UART2.uart.$name = "MyUART1";
+// Use Peripheral
+UART2.uart.$assign = "UART7";
+// Assign pin
+UART2.uart.txPin.$assign = "boosterpack.4"; // PC5
+// Assign pin
+UART2.uart.rxPin.$assign = "boosterpack.3"; // PC4
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO1.$name = "BTSPP_RST";
+// Mode - Select the GPIO mode
+GPIO1.mode = "Output";
+// Initial Output State - Specifies the initial output state
+GPIO1.initialOutputState = "High";
+// Assign pin
+GPIO1.gpioPin.$assign = "boosterpack.5"; // PC6
+// Suggest solution
+RTOS.timer0.resource.$suggestSolution = "Timer0";
+// Suggest solution
+ADCBuf1.timer.$suggestSolution = "Timer1";
+// Suggest solution
+ADCBuf1.adc.$suggestSolution = "ADC0";
+// Suggest solution
+ADCBuf1.sequencer0.dmaChannel.$suggestSolution = "UDMA_CH14";
+// Suggest solution
+ADCBuf1.sequencer1.dmaChannel.$suggestSolution = "UDMA_CH15";
+// Suggest solution
+Display1.uart.uart.$suggestSolution = "UART0";
+// Suggest solution
+Display1.uart.uart.txPin.$suggestSolution = "34";
+// Suggest solution
+Display1.uart.uart.rxPin.$suggestSolution = "33";
