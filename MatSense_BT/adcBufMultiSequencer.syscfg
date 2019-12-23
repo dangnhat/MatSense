@@ -13,9 +13,25 @@ var Power = scripting.addModule("/ti/drivers/Power");
 var Display = scripting.addModule("/ti/display/Display");
 var Display1 = Display.addInstance();
 var UART = scripting.addModule("/ti/drivers/UART");
-var UART2 = UART.addInstance();
+var UART1 = UART.addInstance();
 var GPIO = scripting.addModule("/ti/drivers/GPIO");
 var GPIO1 = GPIO.addInstance();
+var GPIO2 = GPIO.addInstance();
+var GPIO3 = GPIO.addInstance();
+var GPIO4 = GPIO.addInstance();
+var GPIO5 = GPIO.addInstance();
+var GPIO6 = GPIO.addInstance();
+var GPIO7 = GPIO.addInstance();
+var GPIO8 = GPIO.addInstance();
+var GPIO9 = GPIO.addInstance();
+var GPIO10 = GPIO.addInstance();
+var GPIO11 = GPIO.addInstance();
+var GPIO12 = GPIO.addInstance();
+var GPIO13 = GPIO.addInstance();
+var GPIO14 = GPIO.addInstance();
+var GPIO15 = GPIO.addInstance();
+var GPIO16 = GPIO.addInstance();
+var GPIO17 = GPIO.addInstance();
 // Name
 RTOS.timer0.resource.$name = "MyTimer1";
 // Name - The C/C++ identifier used in applications as the index parameter passed to ADC runtime APIs
@@ -91,15 +107,15 @@ Display1.uart.$name = "CONFIG_UART_0";
 // Name
 Display1.uart.uart.$name = "MyUART1";
 // Name - The C/C++ identifier used in applications as the index parameter passed to UART runtime APIs
-UART2.$name = "BTSPP_UART";
+UART1.$name = "BTSPP_UART";
 // Name
-UART2.uart.$name = "MyUART1";
+UART1.uart.$name = "MyUART1";
 // Use Peripheral
-UART2.uart.$assign = "UART7";
+UART1.uart.$assign = "UART7";
 // Assign pin
-UART2.uart.txPin.$assign = "boosterpack.4"; // PC5
+UART1.uart.txPin.$assign = "boosterpack.4"; // PC5
 // Assign pin
-UART2.uart.rxPin.$assign = "boosterpack.3"; // PC4
+UART1.uart.rxPin.$assign = "boosterpack.3"; // PC4
 // Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
 GPIO1.$name = "BTSPP_RST";
 // Mode - Select the GPIO mode
@@ -108,6 +124,102 @@ GPIO1.mode = "Output";
 GPIO1.initialOutputState = "High";
 // Assign pin
 GPIO1.gpioPin.$assign = "boosterpack.5"; // PC6
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO2.$name = "MUX_IN_CTRL0";
+// Mode - Select the GPIO mode
+GPIO2.mode = "Output";
+// Assign pin
+GPIO2.gpioPin.$assign = "boosterpack.34"; // PL0
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO3.$name = "MUX_IN_CTRL1";
+// Mode - Select the GPIO mode
+GPIO3.mode = "Output";
+// Assign pin
+GPIO3.gpioPin.$assign = "boosterpack.33"; // PL1
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO4.$name = "MUX_IN_CTRL2";
+// Mode - Select the GPIO mode
+GPIO4.mode = "Output";
+// Assign pin
+GPIO4.gpioPin.$assign = "boosterpack.32"; // PL2
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO5.$name = "MUX_IN_CTRL3";
+// Mode - Select the GPIO mode
+GPIO5.mode = "Output";
+// Assign pin
+GPIO5.gpioPin.$assign = "boosterpack.31"; // PL3
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO6.$name = "MUX_IN_CTRL4";
+// Mode - Select the GPIO mode
+GPIO6.mode = "Output";
+// Assign pin
+GPIO6.gpioPin.$assign = "boosterpack.36"; // PL4
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO7.$name = "MUX_IN_CTRL5";
+// Mode - Select the GPIO mode
+GPIO7.mode = "Output";
+// Assign pin
+GPIO7.gpioPin.$assign = "boosterpack.35"; // PL5
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO8.$name = "MUX_IN_CTRL6";
+// Mode - Select the GPIO mode
+GPIO8.mode = "Output";
+// Assign pin
+GPIO8.gpioPin.$assign = "boosterpack.40"; // PF1
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO9.$name = "MUX_IN_CTRL7";
+// Mode - Select the GPIO mode
+GPIO9.mode = "Output";
+// Assign pin
+GPIO9.gpioPin.$assign = "boosterpack.39"; // PF2
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO10.$name = "MUX_OUT_CTRL0";
+// Mode - Select the GPIO mode
+GPIO10.mode = "Output";
+// Assign pin
+GPIO10.gpioPin.$assign = "boosterpack.14"; // PD0
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO11.$name = "MUX_OUT_CTRL1";
+// Mode - Select the GPIO mode
+GPIO11.mode = "Output";
+// Assign pin
+GPIO11.gpioPin.$assign = "boosterpack.15"; // PD1
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO12.$name = "MUX_OUT_CTRL2";
+// Mode - Select the GPIO mode
+GPIO12.mode = "Output";
+// Assign pin
+GPIO12.gpioPin.$assign = "boosterpack.13"; // PN2
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO13.$name = "MUX_OUT_CTRL3";
+// Mode - Select the GPIO mode
+GPIO13.mode = "Output";
+// Assign pin
+GPIO13.gpioPin.$assign = "boosterpack.12"; // PN3
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO14.$name = "MUX_OUT_CTRL4";
+// Mode - Select the GPIO mode
+GPIO14.mode = "Output";
+// Assign pin
+GPIO14.gpioPin.$assign = "boosterpack.11"; // PP2
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO15.$name = "MUX_OUT_CTRL5";
+// Mode - Select the GPIO mode
+GPIO15.mode = "Output";
+// Assign pin
+GPIO15.gpioPin.$assign = "boosterpack.19"; // PM3
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO16.$name = "MUX_OUT_CTRL6";
+// Mode - Select the GPIO mode
+GPIO16.mode = "Output";
+// Assign pin
+GPIO16.gpioPin.$assign = "boosterpack.18"; // PH2
+// Name - The C/C++ identifier used in applications as the index parameter passed to GPIO runtime APIs
+GPIO17.$name = "MUX_OUT_CTRL7";
+// Mode - Select the GPIO mode
+GPIO17.mode = "Output";
+// Assign pin
+GPIO17.gpioPin.$assign = "boosterpack.17"; // PH3
 // Suggest solution
 RTOS.timer0.resource.$suggestSolution = "Timer0";
 // Suggest solution

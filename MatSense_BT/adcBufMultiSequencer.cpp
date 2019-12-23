@@ -43,6 +43,7 @@
 
 /* Driver Header files */
 #include <ti/drivers/ADCBuf.h>
+#include <ti/drivers/GPIO.h>
 
 /* Display Header files */
 #include <ti/display/Display.h>
@@ -58,8 +59,8 @@
 
 /* MUX CONFIG */
 const int32_t ref_r = 150; // Reference resistor = 150kOhm.
-const int32_t base_r = 50; // Base resistor value for substraction.
-const int32_t adc_max_value = 4096; // 12 bits ADC.
+const int32_t base_r = 0; // Base resistor value for substraction.
+const int32_t adc_max_value = 3785; // 12 bits ADC.
 /* --- */
 
 #define ADC1_NUMCHANNELS   (8)
@@ -68,6 +69,10 @@ const int32_t adc_max_value = 4096; // 12 bits ADC.
 #define ADC1_BUFFERSIZE    (8)
 #define ADC2_BUFFERSIZE    (4)
 
+ADCBuf_Handle adcBuf;
+ADCBuf_Params adcBufParams;
+ADCBuf_Conversion continuousConversion1[ADC1_NUMCHANNELS];
+ADCBuf_Conversion continuousConversion2[ADC2_NUMCHANNELS];
 uint16_t sequencer0BufferOne[ADC1_BUFFERSIZE];
 uint16_t sequencer0BufferTwo[ADC1_BUFFERSIZE];
 uint16_t sequencer1BufferOne[ADC2_BUFFERSIZE];
@@ -118,49 +123,11 @@ void adcBufCallback(ADCBuf_Handle handle, ADCBuf_Conversion *conversion,
 }
 
 /*
- *  ======== mainThread ========
+ * This function is called to initialize ADC and start the conversion continuously.
+ *
  */
-void *mainThread(void *arg0)
-{
-    Display_Params displayParams;
-    ADCBuf_Handle adcBuf;
-    ADCBuf_Params adcBufParams;
-    ADCBuf_Conversion continuousConversion1[ADC1_NUMCHANNELS];
-    ADCBuf_Conversion continuousConversion2[ADC2_NUMCHANNELS];
-    uint_fast16_t i, count;
-    int32_t status;
-    int32_t res, adc_val;
-    uint8_t scaled_res;
-
-    /* Init BTSPP */
-    BPLib btspp;
-    if (btspp.begin((char *) BP_MODE_SPP, (char *) BP_SPP_SPP) != 1) {
-      IES_DEBUG_STATE("mainThread: Failed to initialize BTSPP. Aborting...");
-      while (1)
-        ;
-    }
-
-
-    /* Call driver init functions */
-    ADCBuf_init();
-    Display_init();
-
-    /* Configure & open Display driver */
-    Display_Params_init(&displayParams);
-    displayParams.lineClearMode = DISPLAY_CLEAR_BOTH;
-    displayHandle = Display_open(Display_Type_UART, &displayParams);
-    if (displayHandle == NULL) {
-        IES_DEBUG_STATE("Error creating displayHandle\n");
-        while (1);
-    }
-    
-    status = sem_init(&adcbufSem, 0, 0);
-    if (status != 0) {
-        IES_DEBUG_STATE("Error creating adcbufSem\n");
-        while(1);
-    }
-
-    IES_DEBUG_STATE("Starting the ADCBuf Multi-Sequencer example");
+void startADC(void) {
+    uint_fast16_t count;
 
     /* Set up an ADCBuf peripheral in ADCBuf_RECURRENCE_MODE_CONTINUOUS */
     ADCBuf_Params_init(&adcBufParams);
@@ -228,6 +195,74 @@ void *mainThread(void *arg0)
         /* Did not start conversion process correctly. */
         while(1);
     }
+
+}
+
+
+/*
+ *  ======== mainThread ========
+ */
+void *mainThread(void *arg0)
+{
+    Display_Params displayParams;
+    int32_t status;
+    int32_t res, adc_val;
+    uint8_t scaled_res;
+
+    /* Init BTSPP */
+    BPLib btspp;
+    if (btspp.begin((char *) BP_MODE_SPP, (char *) BP_SPP_SPP) != 1) {
+      IES_DEBUG_STATE("mainThread: Failed to initialize BTSPP. Aborting...");
+      while (1)
+        ;
+    }
+
+
+    /* Call driver init functions */
+    GPIO_init();
+    ADCBuf_init();
+    Display_init();
+
+    /* Configure & open Display driver */
+    Display_Params_init(&displayParams);
+    displayParams.lineClearMode = DISPLAY_CLEAR_BOTH;
+    displayHandle = Display_open(Display_Type_UART, &displayParams);
+    if (displayHandle == NULL) {
+        IES_DEBUG_STATE("Error creating displayHandle\n");
+        while (1);
+    }
+    
+    status = sem_init(&adcbufSem, 0, 0);
+    if (status != 0) {
+        IES_DEBUG_STATE("Error creating adcbufSem\n");
+        while(1);
+    }
+
+    IES_DEBUG_STATE("Welcome to MatSense-BT v0.1\n");
+
+    /* Init the initial values for control pins */
+    GPIO_write(MUX_OUT_CTRL0, 0);
+    GPIO_write(MUX_OUT_CTRL1, 0);
+    GPIO_write(MUX_OUT_CTRL2, 0);
+    GPIO_write(MUX_OUT_CTRL3, 0);
+    GPIO_write(MUX_OUT_CTRL4, 0);
+    GPIO_write(MUX_OUT_CTRL5, 0);
+    GPIO_write(MUX_OUT_CTRL6, 0);
+    GPIO_write(MUX_OUT_CTRL7, 0);
+
+    GPIO_write(MUX_IN_CTRL0, 0);
+    GPIO_write(MUX_IN_CTRL1, 0);
+    GPIO_write(MUX_IN_CTRL2, 0);
+    GPIO_write(MUX_IN_CTRL3, 0);
+    GPIO_write(MUX_IN_CTRL4, 0);
+    GPIO_write(MUX_IN_CTRL5, 0);
+    GPIO_write(MUX_IN_CTRL6, 0);
+    GPIO_write(MUX_IN_CTRL7, 0);
+
+    /* Start the ADC */
+    startADC();
+
+
     /*
      * Go to sleep in the foreground thread forever. The data will be collected
      * and transfered in the background thread
@@ -245,32 +280,40 @@ void *mainThread(void *arg0)
         IES_DEBUG_STATE("\r\nCONFIG_ADCBUF0SEQ_0:");
         IES_DEBUG_STATE("\r\nADC Values, Resistor(kOhm):");
 
-        /* Send the header to BTSPP */
-        btspp.sendByte(0xA0);
-
-        /* Print and send all ADC values */
-        for (i = 0; i < ADC1_BUFFERSIZE; i++)
-        {
-            adc_val = outputBuffer[0][i];
-            res = (ref_r * adc_max_value)/adc_val - ref_r;
-            scaled_res = (uint8_t) (res - base_r);
-            btspp.sendByte(scaled_res);
-            IES_DEBUG_STATE("    %u, %u", adc_val, res);
-        }
-        IES_DEBUG_STATE("\r\nCONFIG_ADCBUF0SEQ_1:");
-        IES_DEBUG_STATE("\r\nADC Values, Resistor(kOhm):");
-        for (i = 0; i < ADC2_BUFFERSIZE; i++)
-        {
-            adc_val = outputBuffer[1][i];
-            res = (ref_r * adc_max_value)/adc_val - ref_r;
-            scaled_res = (uint8_t) (res - base_r);
-            btspp.sendByte(scaled_res);
-            IES_DEBUG_STATE("    %u, %u", adc_val, res);
-        }
-        memset(outputBuffer, 0, sizeof(outputBuffer));
-
-        /* Send the header to BTSPP */
-        btspp.sendByte(0xC0);
+        adc_val = outputBuffer[0][0];
+        res = (ref_r * adc_max_value) / adc_val - ref_r;
+        scaled_res = (uint8_t) (res - base_r);
+        btspp.sendByte(scaled_res);
+        IES_DEBUG_STATE("    %u, %u", adc_val, res);
     }
 
 }
+
+/* Old code */
+//
+///* Send the header to BTSPP */
+//btspp.sendByte(0xA0);
+//
+///* Print and send all ADC values */
+//for (i = 0; i < ADC1_BUFFERSIZE; i++)
+//{
+//    adc_val = outputBuffer[0][i];
+//    res = (ref_r * adc_max_value)/adc_val - ref_r;
+//    scaled_res = (uint8_t) (res - base_r);
+//    btspp.sendByte(scaled_res);
+//    IES_DEBUG_STATE("    %u, %u", adc_val, res);
+//}
+//IES_DEBUG_STATE("\r\nCONFIG_ADCBUF0SEQ_1:");
+//IES_DEBUG_STATE("\r\nADC Values, Resistor(kOhm):");
+//for (i = 0; i < ADC2_BUFFERSIZE; i++)
+//{
+//    adc_val = outputBuffer[1][i];
+//    res = (ref_r * adc_max_value)/adc_val - ref_r;
+//    scaled_res = (uint8_t) (res - base_r);
+//    btspp.sendByte(scaled_res);
+//    IES_DEBUG_STATE("    %u, %u", adc_val, res);
+//}
+//memset(outputBuffer, 0, sizeof(outputBuffer));
+
+/* Send the header to BTSPP */
+//btspp.sendByte(0xC0);
