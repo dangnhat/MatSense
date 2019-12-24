@@ -40,6 +40,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <semaphore.h>
+#include <stdlib.h>
 
 /* Driver Header files */
 #include <ti/drivers/ADC.h>
@@ -97,6 +98,7 @@ void *mainThread(void *arg0)
     uint16_t adc_val;
     uint8_t scaled_res;
     int_fast16_t ret;
+    uint8_t bt_buffer[100], bt_buffer_index;
 
     /* Init BTSPP */
     BPLib btspp;
@@ -151,8 +153,21 @@ void *mainThread(void *arg0)
         /*
          * Set the control values.
          */
+
+        int m = 0;
+        int TbinaryNum[8] = {0};
+
+        // counter for binary array
+        int k = 0;
+        while (m > 0) {
+            // storing remainder in binary array
+            TbinaryNum[k] = m % 2;
+            m = m / 2;
+            k++;
+        }
+
         GPIO_write(MUX_OUT_CTRL0, 0);
-        GPIO_write(MUX_OUT_CTRL1, 0);
+        GPIO_write(MUX_OUT_CTRL1, 1);
         GPIO_write(MUX_OUT_CTRL2, 0);
         GPIO_write(MUX_OUT_CTRL3, 0);
         GPIO_write(MUX_OUT_CTRL4, 0);
@@ -160,30 +175,68 @@ void *mainThread(void *arg0)
         GPIO_write(MUX_OUT_CTRL6, 0);
         GPIO_write(MUX_OUT_CTRL7, 0);
 
-        GPIO_write(MUX_IN_CTRL0, 0);
-        GPIO_write(MUX_IN_CTRL1, 0);
-        GPIO_write(MUX_IN_CTRL2, 0);
-        GPIO_write(MUX_IN_CTRL3, 0);
-        GPIO_write(MUX_IN_CTRL4, 0);
-        GPIO_write(MUX_IN_CTRL5, 0);
-        GPIO_write(MUX_IN_CTRL6, 0);
-        GPIO_write(MUX_IN_CTRL7, 0);
+//        GPIO_write(MUX_IN_CTRL0, 0);
+//        GPIO_write(MUX_IN_CTRL1, 0);
+//        GPIO_write(MUX_IN_CTRL2, 0);
+//        GPIO_write(MUX_IN_CTRL3, 0);
+//        GPIO_write(MUX_IN_CTRL4, 0);
+//        GPIO_write(MUX_IN_CTRL5, 0);
+//        GPIO_write(MUX_IN_CTRL6, 0);
+//        GPIO_write(MUX_IN_CTRL7, 0);
+
+        int n = 64;
+        int RbinaryNum[8] = {0};
+
+        // counter for binary array
+        int i = 0;
+        while (n > 0) {
+
+            // storing remainder in binary array
+            RbinaryNum[i] = n % 2;
+            n = n / 2;
+            i++;
+        }
+
+        GPIO_write(MUX_IN_CTRL0, RbinaryNum[0]);
+        GPIO_write(MUX_IN_CTRL1, RbinaryNum[1]);
+        GPIO_write(MUX_IN_CTRL2, RbinaryNum[2]);
+        GPIO_write(MUX_IN_CTRL3, RbinaryNum[3]);
+        GPIO_write(MUX_IN_CTRL4, RbinaryNum[4]);
+        GPIO_write(MUX_IN_CTRL5, RbinaryNum[5]);
+        GPIO_write(MUX_IN_CTRL6, RbinaryNum[6]);
+        GPIO_write(MUX_IN_CTRL7, RbinaryNum[7]);
 
         /* Read ADC */
         ret = ADC_convert(adc, &adc_val);
 
+        /* Sending data */
         if (ret == ADC_STATUS_SUCCESS) {
-
             IES_DEBUG_STATE("\r\nADC Values, Resistor(kOhm):");
-
             res = (ref_r * adc_max_value) / adc_val - ref_r;
             scaled_res = (uint8_t) (res - base_r);
-            btspp.sendByte(scaled_res);
+            bt_buffer[0] = 0;
+            bt_buffer[1] = 64;
+            bt_buffer[2] = scaled_res;
+            bt_buffer_index = 3;
+
+
+//            btspp.sendByte(0xA0);
+//            btspp.sendByte(m + 1);
+//            btspp.sendByte(n + 1);
+//            btspp.sendByte(scaled_res);
+//            btspp.sendByte(0xC0);
             IES_DEBUG_STATE("    %u, %u", adc_val, res);
+//            IES_DEBUG_STATE("    %u, %u, %u, %u, %u, %u, %u, %u", binaryNum[0], binaryNum[1], binaryNum[2], binaryNum[3], binaryNum[4], binaryNum[5], binaryNum[6], binaryNum[7]);
+//            usleep(100000);
         }
         else {
             IES_DEBUG_STATE("ADC0 convert failed\n");
         }
+
+        /* Send buffer over BT */
+        btspp.sendByte(0xA0);
+        btspp.sendBuffer(bt_buffer, bt_buffer_index);
+        btspp.sendByte(0xC0);
     }
 
 }
